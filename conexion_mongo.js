@@ -57,32 +57,30 @@ app.get('/requirements', function (req, res) {
 
 
 app.delete('/requirement', function (req, res) {
-	console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
 	MongoClient.connect(url, function(err, db) {
 	  if (err) throw err;
 	  var queryReq = req.query;
 	  var param = null;
-	  console.log('endpoint delete llamado');
 	  if (queryReq.hasOwnProperty("requirement")){
 		param = queryReq.requirement;
 		console.log('Requirement to delete :' + param);
 		var query = {"status_id" : param};
 		const dbo = db.db('twitter_data');
 	  
-		dbo.collection('tweet').deleteOne(query),function(err, result) {
-			if (err) throw err;
-			//console.log(result);
-			console.log("1 document deleted");
-			res.json({"result": "Delete"});
+		dbo.collection('tweet').deleteOne((query),function(err) {
+			if (err) {
+				res.send(err);
+			}
+		});
+		console.log("Requirement deleted");
+		db.close();
+		res.json({"result": "Delete"});
 
-			db.close();
-		};
 	  }else{
-		  res.json({"result": "Not found"});
 		  db.close();
+		  res.json({"result": "Not found"});
 	  }
 	});
-	console.log("fin metodo");
 })
 
 function uppercaseFirstLetter(string) 
