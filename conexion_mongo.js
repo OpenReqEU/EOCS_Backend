@@ -19,42 +19,6 @@ app.use(bodyParser.json());
 var url = "mongodb://193.146.116.148:27017/";
 const port = process.env.PORT || 3000;
 
-app.get('/projects', function (req, res) {
-	MongoClient.connect(url, function(err, db) {
-	  if (err) return res.status(500).json(err);
-	  const dbo = db.db('twitter_data')
-	  dbo.collection('observable_twitter').find().toArray(function(err, result) {
-	    if (err) return res.status(500).json(err);
-	    console.log(result);
-	    res.json(result);
-
-	    db.close();
-	  });
-	});
-	
-});
-
-app.get('/requirements', function (req, res) {
-	MongoClient.connect(url, function(err, db) {
-	  if (err) return res.status(500).json(err);
-	  var queryReq = req.query;
-	  var param = null;
-	  if (queryReq.hasOwnProperty("project")){
-		param = queryReq.project;
-	  }
-	  var query = param !== null ? {"in_reply_to_screen_name" : uppercaseFirstLetter(param)} : {};
-	  const dbo = db.db('twitter_data')
-	  dbo.collection('tweet').find(query).toArray(function(err, result) {
-	    if (err) return res.status(500).json(err);
-	    console.log(result);
-	    res.json(result);
-
-	    db.close();
-	  });
-	});
-	
-});
-
 
 app.delete('/requirement', function (req, res) {
 	MongoClient.connect(url, function(err, db) {
