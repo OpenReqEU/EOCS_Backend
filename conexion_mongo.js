@@ -19,7 +19,6 @@ app.use(bodyParser.json());
 var url = "mongodb://193.146.116.148:27017/";
 const port = process.env.PORT || 3000;
 
-
 app.delete('/requirement', function (req, res) {
 	MongoClient.connect(url, function(err, db) {
 	  if (err) return res.status(500).json(err);
@@ -37,6 +36,32 @@ app.delete('/requirement', function (req, res) {
 			}
 		});
 		console.log("Requirement deleted");
+		db.close();
+		res.json({"result": "Delete"});
+
+	  }else{
+		  db.close();
+		  res.json({"result": "Not found"});
+	  }
+	});
+})
+
+app.delete('/requirements', function (req, res) {
+	MongoClient.connect(url, function(err, db) {
+	  if (err) return res.status(500).json(err);
+	  var queryReq = req.query;
+	  var param = null;
+	  if (queryReq.hasOwnProperty("account")){
+		param = queryReq.account;
+		var query = {"in_reply_to_screen_name" : param};
+		const dbo = db.db('twitter_data');
+	  
+		dbo.collection('tweet').remove((query),function(err) {
+			if (err) {
+				return res.status(500).json(err);
+			}
+		});
+		console.log("Requirements deleted");
 		db.close();
 		res.json({"result": "Delete"});
 
