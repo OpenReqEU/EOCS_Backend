@@ -4,8 +4,7 @@ function AllowCrossDomain(){
 
 		//aqui se agregan las aplicaciones
 		var whiteList = [
-			'*',
-			'http://localhost:4200'
+			'*'
 		];
 
 		var origen = req.headers.origin;
