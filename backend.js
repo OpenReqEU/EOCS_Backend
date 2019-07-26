@@ -16,11 +16,23 @@ app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
 
 
-var url = "mongodb://193.146.116.148:27017/";
+var url_mongo = "mongodb://193.146.116.148:27017/";
+
+
+const pg = require('pg');
+var data_pg = {
+	user: 'postgres',
+	host: '193.146.116.148',
+	database: 'ex_vote_dev',
+	password: 'postgres',
+	port: '5432'
+};
+
+
 const port = process.env.PORT || 3000;
 
 app.delete('/requirement', function (req, res) {
-	MongoClient.connect(url, function(err, db) {
+	MongoClient.connect(url_mongo, function(err, db) {
 	  if (err) return res.status(500).json(err);
 	  var queryReq = req.query;
 	  var param = null;
@@ -47,7 +59,7 @@ app.delete('/requirement', function (req, res) {
 })
 
 app.delete('/requirements', function (req, res) {
-	MongoClient.connect(url, function(err, db) {
+	MongoClient.connect(url_mongo, function(err, db) {
 	  if (err) return res.status(500).json(err);
 	  var queryReq = req.query;
 	  var param = null;
@@ -70,6 +82,40 @@ app.delete('/requirements', function (req, res) {
 		  res.json({"result": "Not found"});
 	  }
 	});
+})
+
+app.delete('/edemocracyProject', function (req, res) {
+	const pool = new pg.Pool(data_pg);
+	var queryReq = req.query;
+	var project = null;
+	var id = null;
+	if (queryReq.hasOwnProperty("project")){
+		project = queryReq.project;
+	}
+	if (queryReq.hasOwnProperty("id")){
+		id = queryReq.id;
+	}
+	
+	if(!id || !project){
+		return res.status(400).json({"result": "Incorrect params"});
+	}
+	
+	pool.query("DELETE FROM projects where title='" + project + "'", (err, res) => {
+		console.log(err, res);
+		if (err) {
+			return res.status(500).json(err);
+		}		
+	});
+
+	pool.query("DELETE FROM tickets where project_id=" + id, (err, res) => {
+		console.log(err, res);
+		if (err) {
+			return res.status(500).json(err);
+		}		
+	});
+
+	pool.end();
+	res.json({"result": "Delete"});
 })
 
 function uppercaseFirstLetter(string) 
