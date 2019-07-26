@@ -118,6 +118,38 @@ app.delete('/edemocracyProject', function (req, res) {
 	res.json({"result": "Delete"});
 })
 
+app.get('/username', function (req, res) {
+	const pool = new pg.Pool(data_pg);
+	var queryReq = req.query;
+	var id = null;
+	var username = null;
+	
+	if (queryReq.hasOwnProperty("id")){
+		id = queryReq.id;
+	}
+	
+	if(!id){
+		return res.status(400).json({"result": "Incorrect params"});
+	}
+	
+	pool.query("SELECT name FROM users where id=" + id, (err, result) => {
+		//console.log(err, res);
+		if (err) {
+			return res.status(500).json(err);
+		}
+			
+		if(result){
+			username = result.rows[0].name;
+			console.log(username);
+			res.json({"username": username});
+		}
+	});
+
+	pool.end();
+	
+})
+
+
 function uppercaseFirstLetter(string) 
 {
     return string.charAt(0).toUpperCase() + string.slice(1);
