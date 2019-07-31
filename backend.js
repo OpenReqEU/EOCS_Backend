@@ -94,21 +94,24 @@ app.delete('/edemocracyProject', function (req, res) {
 	}
 	if (queryReq.hasOwnProperty("id")){
 		id = queryReq.id;
+		if(id == undefined){
+			id = null;
+		}
 	}
 	
 	if(!id || !project){
 		return res.status(400).json({"result": "Incorrect params"});
 	}
 	
-	pool.query("DELETE FROM projects where title='" + project + "'", (err, res) => {
-		console.log(err, res);
+	pool.query("DELETE FROM projects where title='" + project + "'", (err, resp) => {
+		console.log(err, resp);
 		if (err) {
 			return res.status(500).json(err);
 		}		
 	});
 
-	pool.query("DELETE FROM tickets where project_id=" + id, (err, res) => {
-		console.log(err, res);
+	pool.query("DELETE FROM tickets where project_id=" + id, (err, resp) => {
+		console.log(err, resp);
 		if (err) {
 			return res.status(500).json(err);
 		}		
